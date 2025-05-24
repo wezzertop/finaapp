@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Categoría - FinaApp{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Eliminar Categoría</h1>
+</div>
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">¡Atención!</h4>
+    <p>Estás a punto de eliminar la categoría: <strong>{{ categoria.nombre }}</strong>.</p>
+    <hr>
+    <p class="mb-0">
+        Esta acción no se puede deshacer. Si esta categoría tiene transacciones asociadas,
+        **no se podrá eliminar** para mantener la integridad de tus datos.
+    </p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p>¿Estás seguro de que deseas intentar eliminar esta categoría?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash-fill"></i> Sí, Eliminar
+            </button>
+            <a href="{% url 'gestion:listar_categorias' %}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> No, Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

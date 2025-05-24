@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load i18n %} {# Necesario para algunos filtros, aunque no usemos i18n directamente #}
+
+{% block title %}Dashboard - FinaApp{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'gestion:crear_transaccion' %}" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-plus-circle"></i> Nuevo Ingreso
+            </a>
+            <a href="{% url 'gestion:crear_transaccion' %}" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-dash-circle"></i> Nuevo Gasto
+            </a>
+        </div>
+    </div>
+</div>
+
+<h2>Bienvenido a FinaApp</h2>
+<p>Resumen de tus finanzas para {{ current_month_name }} {{ now.year }}.</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Ingresos de {{ current_month_name }}</div>
+            <div class="card-body">
+                <h5 class="card-title">${{ ingresos_mes|floatformat:2 }}</h5>
+                <p class="card-text">Total de ingresos este mes.</p>
+            </div>
+        </div>
+    </div>
+     <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Gastos de {{ current_month_name }}</div>
+            <div class="card-body">
+                <h5 class="card-title">${{ gastos_mes|floatformat:2 }}</h5>
+                <p class="card-text">Total de gastos este mes.</p>
+            </div>
+        </div>
+    </div>
+     <div class="col-md-4">
+        <div class="card text-dark bg-warning mb-3">
+            <div class="card-header">Balance Total Acumulado</div>
+            <div class="card-body">
+                <h5 class="card-title">${{ balance_total|floatformat:2 }}</h5>
+                <p class="card-text">Saldo total considerando todo.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<h3 class="mt-4">Últimas Transacciones</h3>
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Cartera</th>
+                <th scope="col">Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# Bucle para mostrar cada transacción #}
+            {% for tx in transacciones %}
+            <tr>
+                <td>{{ tx.fecha|date:"d/m/Y" }}</td> {# Formateamos la fecha #}
+                <td>
+                    {# Mostramos Ingreso o Gasto y añadimos color #}
+                    {% if tx.tipo == 'I' %}
+                        <span class="badge bg-success">{{ tx.get_tipo_display }}</span>
+                    {% else %}
+                         <span class="badge bg-danger">{{ tx.get_tipo_display }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ tx.categoria.nombre }}</td> {# Accedemos al nombre de la categoría #}
+                <td class="text-end {% if tx.tipo == 'I' %}text-success{% else %}text-danger{% endif %}">
+                    {{ tx.monto|floatformat:2 }} {# Aplicamos formato #}
+                </td>
+                <td>{{ tx.cartera.nombre }}</td> {# Accedemos al nombre de la cartera #}
+                <td>{{ tx.descripcion|default:"-" }}</td> {# Mostramos descripción o un guión #}
+            </tr>
+            {# Mensaje si no hay transacciones #}
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center fst-italic">Aún no has registrado ninguna transacción. ¡Empieza <a href="{% url 'gestion:crear_transaccion' %}">añadiendo una</a>!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
